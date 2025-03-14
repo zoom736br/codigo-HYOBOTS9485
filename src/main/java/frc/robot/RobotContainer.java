@@ -23,18 +23,19 @@ public class RobotContainer {
 
   // Aqui iniciamos o swerve
   private SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  
-  // Controle de Xbox, troque para o qual sua equipe estará utilizando
-  public XboxController controleXbox = new XboxController(Controle.xboxControle);
+
+  private DriverController driverController = DriverController.getInstance();
 
   public RobotContainer() {
 
     // Definimos o comando padrão como a tração
     swerve.setDefaultCommand(swerve.driveCommand(
-      () -> MathUtil.applyDeadband(controleXbox.getLeftY(), Constants.Controle.DEADBAND),
-      () -> MathUtil.applyDeadband(controleXbox.getLeftX(), Constants.Controle.DEADBAND),
-      () ->  MathUtil.applyDeadband(controleXbox.getRightX(), Constants.Controle.DEADBAND))
+      driverController.getXtranslation(),
+      driverController.getYtranslation(),
+      driverController.getRotation())
     );
+
+    driverController.leftBumper().onTrue(new InstantCommand(() -> driverController.changeAlliances()));
 
     NamedCommands.registerCommand("Intake", new PrintCommand("Intake"));
 
